@@ -5,7 +5,8 @@ metadata:
  labels:
    app: nodejs
 spec:
- type: LoadBalancer
+# type: LoadBalancer
+ type: ClusterIP
  selector:
   component: web
  ports:
@@ -18,8 +19,8 @@ metadata:
  labels:
    app: nodejs
  name: pipelinescript-deployment
- annotations:  
-   template.alpha.openshift.io/wait-for-ready: 'true'
+# annotations:  
+#   template.alpha.openshift.io/wait-for-ready: 'true'
 spec:
  replicas: 1
  selector:
