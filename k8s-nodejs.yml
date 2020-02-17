@@ -67,8 +67,7 @@ spec:
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: pipelinescript-hpa
-  namespace: homologacao
+  name: pipelinescript-hpa  
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
