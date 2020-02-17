@@ -31,6 +31,8 @@ spec:
     component: web
     app: nodejs
   spec:
+   imagePullSecrets:
+     - name: acrcredentials
    containers: 
     - name: pipelinescript
       image: clusteraksregistry.azurecr.io/pipelinescript:latest
