@@ -1,0 +1,37 @@
+timestamps {
+    node('npm-jenkins-slave') {
+        stage('Checkout'){
+         //   checkout scm
+        // checkout([$class: &amp;apos;GitSCM&amp;apos;, branches: [[name: &amp;apos;*/k8s&amp;apos;]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: &amp;apos;github_marcossoares&amp;apos;,url: &amp;apos;https://github.com/marcos2soares/PipelineScriptsBackendProject.git&amp;apos;]]])
+       checkout([$class: 'GitSCM', branches: [[name: '*/k8s']],doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/marcos2soares/PipelineScriptsBackendProject.git']]])
+        //  git branch: &amp;apos;k8s&amp;apos;, url: &amp;apos;https://github.com/marcos2soares/PipelineScriptsBackendProject.git&amp;apos;
+        }
+        stage('Compile'){
+            sh 'npm install'
+        }
+        stage ('Test'){
+            sh 'npm test'
+        }
+        
+        
+       stage('Build the Image and Push to Azure Container Registry')   {
+              
+               app = docker.build('clusteraksregistry.azurecr.io/pipelinescript')
+               withDockerRegistry([credentialsId: 'acr_credentials', url: 'https://clusteraksregistry.azurecr.io']) {
+               app.push("${env.BUILD_NUMBER}")
+               app.push('latest')
+            }
+       }
+       
+       
+        stage('Delpoying the App on Azure Kubernetes Service em HML') {
+           app = docker.image('clusteraksregistry.azurecr.io/pipelinescript:latest')
+           withDockerRegistry([credentialsId: 'acr_credentials', url: 'https://clusteraksregistry.azurecr.io']) {
+           app.pull()
+           sh 'kubectl apply -f k8s-pipelinescript-hml.yml -n homologacao --validate=false'
+           }
+        }
+       
+    }
+}   
+    
