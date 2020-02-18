@@ -1,1 +1,81 @@
-
+apiVersion: v1
+kind: Service
+metadata:
+ name: pipelinescript-service
+ labels:
+   app: nodejs
+spec:
+# type: LoadBalancer
+ type: ClusterIP
+ selector:
+  component: web
+ ports:
+  - port: 8080
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ labels:
+   app: nodejs
+ name: pipelinescript-deployment
+# annotations:  
+#   template.alpha.openshift.io/wait-for-ready: 'true'
+spec:
+ replicas: 1
+ selector:
+  matchLabels:
+   component: web
+ template:
+  metadata:
+   labels:
+    component: web
+    app: nodejs
+  spec:
+   imagePullSecrets:
+     - name: acrcredentials
+   containers: 
+    - name: pipelinescript
+      image: clusteraksregistry.azurecr.io/pipelinescript:latest
+      resources:
+        limits:
+          cpu: '1'
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 1024Mi
+      ports:
+       - containerPort: 3000
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 3000
+          scheme: HTTP
+        initialDelaySeconds: 10
+        timeoutSeconds: 2
+        periodSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 3000
+          scheme: HTTP
+        initialDelaySeconds: 30
+        timeoutSeconds: 2
+        periodSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pipelinescript-hpa  
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pipelinescript-deployment
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
