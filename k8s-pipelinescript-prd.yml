@@ -79,3 +79,24 @@ spec:
   minReplicas: 1
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
+---
+piVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+  name: pipelineprod-ingress
+spec:
+  rules:
+  - host: pipelineprod.azure.msdigital.pro
+    http:
+      paths:
+      - backend:
+          serviceName: pipelinescript-service
+          servicePort: 8080
+        path: /
+  tls:
+  - hosts:
+    - pipelineprod.azure.msdigital.pro
+    secretName: pipeline-tls
