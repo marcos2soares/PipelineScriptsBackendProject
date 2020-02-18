@@ -99,7 +99,7 @@ spec:
   tls:
   - hosts:
     - pipelineprod.azure.msdigital.pro
-    secretName: pipelinestaging-tls
+    secretName: pipeline-tls
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -120,4 +120,4 @@ spec:
   tls:
   - hosts:
     - pipelineprod.azure.msdigital.pro
-    secretName: pipelineprod-tls
+    secretName: pipeline-tls
