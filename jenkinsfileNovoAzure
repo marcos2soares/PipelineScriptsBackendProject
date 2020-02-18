@@ -32,6 +32,24 @@ timestamps {
            }
         }
        
+       stage('Deploy PRD') {
+        def userInput = input(
+            id: 'userInput', message: 'Confirm Deploy PRD ?', parameters: [
+            [$class: 'BooleanParameterDefinition', defaultValue: false, description: '', name: 'Please confirm you sure to proceed']
+        ])
+
+        if(!userInput) {
+            error "Build wasn't confirmed"
+        }
+    }
+       
+       stage('Delpoying the App on Azure Kubernetes Service em PRD') {
+           app = docker.image('clusteraksregistry.azurecr.io/pipelinescript:latest')
+           withDockerRegistry([credentialsId: 'acr_credentials', url: 'https://clusteraksregistry.azurecr.io']) {
+           app.pull()
+           sh 'kubectl apply -f k8s-pipelinescript-prd.yml -n producao --validate=false'
+           }
+        }
     }
 }   
     
