@@ -99,4 +99,4 @@ spec:
   tls:
   - hosts:
     - pipelineprod.azure.msdigital.pro
-    secretName: pipelinepro-tls
+    secretName: pipelineprd-tls
