@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 COPY .npmrc ./
-COPY /home/jenkins/.npmrc  /root
+COPY .npmrc.user  /root/.npmrc
 
 RUN npm install
 COPY . .
