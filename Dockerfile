@@ -7,7 +7,7 @@ COPY package*.json ./
 COPY .npmrc ./
 COPY .npmrc.user  /root/.npmrc
 
-RUN npm install
+RUN npm install -verbose
 COPY . .
 
 EXPOSE 3000
