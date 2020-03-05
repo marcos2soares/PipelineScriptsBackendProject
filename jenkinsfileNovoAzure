@@ -6,13 +6,21 @@ timestamps {
        checkout([$class: 'GitSCM', branches: [[name: '*/k8s']],doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/marcos2soares/PipelineScriptsBackendProject.git']]])
         //  git branch: &amp;apos;k8s&amp;apos;, url: &amp;apos;https://github.com/marcos2soares/PipelineScriptsBackendProject.git&amp;apos;
         }
+        
         stage('Compile'){
+            sh 'cp /tmp/secret/.npmrc /home/jenkins'
+            sh 'cp /tmp/secret/.npmrc .npmrc.user'
+            sh 'npm config ls'
             sh 'npm install'
         }
         stage ('Test'){
             sh 'npm test'
         }
         
+        stage ('Code Quality'){
+            def sonar = load 'sonar.groovy'
+            sonar.codeQuality()
+        }
         
        stage('Build the Image and Push to Azure Container Registry')   {
               
